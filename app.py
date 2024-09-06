@@ -1,4 +1,5 @@
 import customtkinter
+from tkinter import ttk
 
 app = customtkinter.CTk()
 
@@ -11,6 +12,7 @@ class Application(customtkinter.CTk):
         self.labels()
         self.inputs()
         self.buttons()
+        self.treeview()
         app.mainloop()
 
     def screen(self):
@@ -19,7 +21,8 @@ class Application(customtkinter.CTk):
         self.app.title("Manager Store")
 
     def frames(self):
-        self.top_container = customtkinter.CTkFrame(self, bg_color="#fff").place(relx=0.10, rely=0.10, relwidth=0.96, relheight=0.46)
+        self.top_container = customtkinter.CTkFrame(self).place(relx=0.10, rely=0.10, relwidth=0.96, relheight=0.46)
+        self.bottom_container = customtkinter.CTkFrame(self).place(relx=0.10, rely=0.60, relwidth=0.96, relheight=0.46)
 
     def labels(self):
         self.name_label = customtkinter.CTkLabel(master=self.top_container, text="Nome")
@@ -59,5 +62,27 @@ class Application(customtkinter.CTk):
 
         self.clear_button = customtkinter.CTkButton(master=self.top_container, width=0.10, height=0.05, corner_radius=16, text="Limpar")
         self.clear_button.place(relx=0.75, rely=0.40, relwidth=0.10, relheight=0.05)
+    
+    def treeview(self):
+        self.listView = ttk.Treeview(self.bottom_container, height=3, column=("Nome", "CPF", "CEP", "Telefone", "Cidade", "Bairro", "Rua"))
+        self.listView.heading("#0", text="")
+        self.listView.heading("#1", text="Nome")
+        self.listView.heading("#2", text="CPF")
+        self.listView.heading("#3", text="CEP")
+        self.listView.heading("#4", text="Telefone")
+        self.listView.heading("#5", text="Cidade")
+        self.listView.heading("#6", text="Bairro")
+        self.listView.heading("#7", text="Rua")
+
+        self.listView.column("#0", width=1)
+        self.listView.column("#1", width=40)
+        self.listView.column("#2", width=40)
+        self.listView.column("#3", width=40)
+        self.listView.column("#4", width=40)
+        self.listView.column("#5", width=40)
+        self.listView.column("#6", width=40)
+        self.listView.column("#7", width=40)
+
+        self.listView.place(relx=0.05, rely=0.60, relwidth=0.90, relheight=0.36)
 
 Application()
