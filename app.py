@@ -10,6 +10,7 @@ class Application(customtkinter.CTk):
         self.frames()
         self.labels()
         self.inputs()
+        self.buttons()
         app.mainloop()
 
     def screen(self):
@@ -45,5 +46,18 @@ class Application(customtkinter.CTk):
 
         self.phone_input = customtkinter.CTkTextbox(master=self.top_container, width=30, height=20, corner_radius=8)
         self.phone_input.place(relx=0.60, rely=0.30, relwidth=0.30, relheight=0.05 )
+
+    def buttons(self):
+        self.register_button = customtkinter.CTkButton(master=self.top_container, width=0.10, height=0.05, corner_radius=16, text="Cadastrar")
+        self.register_button.place(relx=0.15, rely=0.40, relwidth=0.10, relheight=0.05)
+
+        self.update_button = customtkinter.CTkButton(master=self.top_container, width=0.10, height=0.05, corner_radius=16, text="Atualizar")
+        self.update_button.place(relx=0.35, rely=0.40, relwidth=0.10, relheight=0.05)
+
+        self.delete_button = customtkinter.CTkButton(master=self.top_container, width=0.10, height=0.05, corner_radius=16, text="Deletar", fg_color="#ec5353")
+        self.delete_button.place(relx=0.55, rely=0.40, relwidth=0.10, relheight=0.05)
+
+        self.clear_button = customtkinter.CTkButton(master=self.top_container, width=0.10, height=0.05, corner_radius=16, text="Limpar")
+        self.clear_button.place(relx=0.75, rely=0.40, relwidth=0.10, relheight=0.05)
 
 Application()
