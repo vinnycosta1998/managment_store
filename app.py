@@ -1,9 +1,16 @@
 import customtkinter
-from tkinter import ttk
+from tkinter import END, ttk
 
 app = customtkinter.CTk()
 
-class Application(customtkinter.CTk):
+class AppFunctions():
+    def clean_inputs(self):
+        self.name_input.delete("0.0", "end")
+        self.cpf_input.delete("0.0", "end")
+        self.cep_input.delete("0.0", "end")
+        self.phone_input.delete("0.0", "end")
+
+class Application(customtkinter.CTk, AppFunctions):
     def __init__(self):
         super().__init__()
         self.app = app 
@@ -60,7 +67,7 @@ class Application(customtkinter.CTk):
         self.delete_button = customtkinter.CTkButton(master=self.top_container, width=0.10, height=0.05, corner_radius=16, text="Deletar", fg_color="#ec5353")
         self.delete_button.place(relx=0.55, rely=0.40, relwidth=0.10, relheight=0.05)
 
-        self.clear_button = customtkinter.CTkButton(master=self.top_container, width=0.10, height=0.05, corner_radius=16, text="Limpar")
+        self.clear_button = customtkinter.CTkButton(master=self.top_container, width=0.10, height=0.05, corner_radius=16, text="Limpar", command=self.clean_inputs)
         self.clear_button.place(relx=0.75, rely=0.40, relwidth=0.10, relheight=0.05)
     
     def treeview(self):
