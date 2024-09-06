@@ -1,5 +1,6 @@
 import customtkinter
-from tkinter import END, ttk
+from tkinter import ttk
+import sqlite3
 
 app = customtkinter.CTk()
 
@@ -9,6 +10,32 @@ class AppFunctions():
         self.cpf_input.delete("0.0", "end")
         self.cep_input.delete("0.0", "end")
         self.phone_input.delete("0.0", "end")
+
+    def connect_database(self):
+        self.connection = sqlite3.connect("clients.bd")
+        self.cursor = self.connection.cursor()
+    
+    def desconnect_database(self):
+        self.connection.close()
+
+    def create_tables(self):
+        self.connect_database()
+        print("Conecting a database...")
+        self.cursor.execute("""
+            CREATE TABLE IF NOT EXISTS clients(
+                ID INTEGER PRIMARY KEY,
+                NAME CHAR(40) NOT NULL,
+                CPF CHAR(11),
+                CEP char(8),
+                CITY char(20)
+                NEIGHBORHOOD CHAR(20)
+                STREET            
+            );
+        """)
+        self.commit()
+        print("Database created")
+        self.desconnect_database()
+        
 
 class Application(customtkinter.CTk, AppFunctions):
     def __init__(self):
