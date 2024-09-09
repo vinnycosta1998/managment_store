@@ -17,6 +17,7 @@ class AppFunctions():
     
     def desconnect_database(self):
         self.connection.close()
+        print("disconected database")
 
     def create_tables(self):
         self.connect_database()
@@ -27,16 +28,26 @@ class AppFunctions():
                 NAME CHAR(40) NOT NULL,
                 CPF CHAR(11),
                 CEP char(8),
-                CITY char(20)
-                NEIGHBORHOOD CHAR(20)
-                STREET            
+                CITY char(20),
+                NEIGHBORHOOD CHAR(20),
+                STREET CHAR(20)           
             );
         """)
-        self.commit()
+        self.connection.commit()
         print("Database created")
         self.desconnect_database()
-        
 
+    def insert_client(self):
+        self.name = self.name_input.get()
+        self.cpf = self.cpf_input.get()
+        self.cep = self.cep_input.get()
+        self.phone = self.phone.get()
+
+        self.cursor.execute("""
+            INSERT INTO CLIENTES (NAME, CPF, CEP, PHONE)
+            VALUES (?, ?, ?, ?)
+        """, (self.name, self.cpf, self.cep, self.phone))
+    
 class Application(customtkinter.CTk, AppFunctions):
     def __init__(self):
         super().__init__()
@@ -47,6 +58,7 @@ class Application(customtkinter.CTk, AppFunctions):
         self.inputs()
         self.buttons()
         self.treeview()
+        self.create_tables()
         app.mainloop()
 
     def screen(self):
@@ -119,4 +131,5 @@ class Application(customtkinter.CTk, AppFunctions):
 
         self.listView.place(relx=0.05, rely=0.60, relwidth=0.90, relheight=0.36)
 
-Application()
+if __name__ == "main":
+    Application()
