@@ -2,20 +2,21 @@ import customtkinter
 from tkinter import ttk
 import sqlite3
 
+
 app = customtkinter.CTk()
 
 class AppFunctions():
     def clean_inputs(self):
         self.name_input.delete("0.0", "end")
         self.cpf_input.delete("0.0", "end")
-        self.cep_input.delete("0.0", "end")
+        self.email_input.delete("0.0", "end")
         self.phone_input.delete("0.0", "end")
 
     def connect_database(self):
         self.connection = sqlite3.connect("clients.bd")
         self.cursor = self.connection.cursor()
     
-    def desconnect_database(self):
+    def disconnect_database(self):
         self.connection.close()
         print("disconected database")
 
@@ -23,30 +24,43 @@ class AppFunctions():
         self.connect_database()
         print("Conecting a database...")
         self.cursor.execute("""
-            CREATE TABLE IF NOT EXISTS clients(
+            CREATE TABLE IF NOT EXISTS CLIENTS(
                 ID INTEGER PRIMARY KEY,
-                NAME CHAR(40) NOT NULL,
+                NAME VARCHAR(40) NOT NULL,
                 CPF CHAR(11),
-                CEP char(8),
-                CITY char(20),
-                NEIGHBORHOOD CHAR(20),
-                STREET CHAR(20)           
+                EMAIL VARCHAR(40) NOT NULL,
+                PHONE CHAR(12) NOT NULL       
             );
         """)
         self.connection.commit()
         print("Database created")
-        self.desconnect_database()
+        self.list_clients()
+
 
     def insert_client(self):
-        self.name = self.name_input.get()
-        self.cpf = self.cpf_input.get()
-        self.cep = self.cep_input.get()
-        self.phone = self.phone.get()
+        self.name = self.name_input.get("1.0", "end")
+        self.cpf = self.cpf_input.get("1.0", "end")
+        self.email = self.email_input.get("1.0", "end")
+        self.phone = self.phone_input.get("1.0", "end")
 
         self.cursor.execute("""
-            INSERT INTO CLIENTES (NAME, CPF, CEP, PHONE)
+            INSERT INTO CLIENTS (NAME, CPF, EMAIL, PHONE)
             VALUES (?, ?, ?, ?)
-        """, (self.name, self.cpf, self.cep, self.phone))
+        """, (self.name, self.cpf, self.email, self.phone))
+        self.connection.commit()
+        self.clean_inputs()
+
+    def list_clients(self):
+        self.listView.delete(*self.listView.get_children())
+        self.connect_database()
+        self.list = self.cursor.execute("""
+            SELECT ID, NAME, CPF, EMAIL, PHONE FROM CLIENTS
+            ORDER BY NAME ASC;       
+        """)
+
+        for index in self.list:
+            self.listView.insert("", "end", values=index)
+
     
 class Application(customtkinter.CTk, AppFunctions):
     def __init__(self):
@@ -77,8 +91,8 @@ class Application(customtkinter.CTk, AppFunctions):
         self.cpf_label = customtkinter.CTkLabel(master=self.top_container, text="CPF")
         self.cpf_label.place(relx=0.51, rely=0.02, relwidth=0.20, relheight=0.10)
 
-        self.cep_label = customtkinter.CTkLabel(master=self.top_container, text="CEP")
-        self.cep_label.place(relx=0.02, rely=0.2, relwidth=0.20, relheight=0.10)
+        self.email_label = customtkinter.CTkLabel(master=self.top_container, text="Email",)
+        self.email_label.place(relx=0.02, rely=0.2, relwidth=0.20, relheight=0.10)
 
         self.phone_label = customtkinter.CTkLabel(master=self.top_container, text="Telefone")
         self.phone_label.place(relx=0.52, rely=0.2, relwidth=0.20, relheight=0.10)
@@ -90,46 +104,41 @@ class Application(customtkinter.CTk, AppFunctions):
         self.cpf_input = customtkinter.CTkTextbox(master=self.top_container, width=30, height=20, corner_radius=8)
         self.cpf_input.place(relx=0.60, rely=0.12, relwidth=0.30, relheight=0.05)
 
-        self.cep_input = customtkinter.CTkTextbox(master=self.top_container, width=30, height=20, corner_radius=8)
-        self.cep_input.place(relx=0.10, rely=0.30, relwidth=0.30, relheight=0.05)
+        self.email_input = customtkinter.CTkTextbox(master=self.top_container, width=30, height=20, corner_radius=8)
+        self.email_input.place(relx=0.10, rely=0.30, relwidth=0.30, relheight=0.05)
 
         self.phone_input = customtkinter.CTkTextbox(master=self.top_container, width=30, height=20, corner_radius=8)
         self.phone_input.place(relx=0.60, rely=0.30, relwidth=0.30, relheight=0.05 )
 
     def buttons(self):
-        self.register_button = customtkinter.CTkButton(master=self.top_container, width=0.10, height=0.05, corner_radius=16, text="Cadastrar")
+        self.register_button = customtkinter.CTkButton(master=self.top_container, width=0.10, height=0.05, corner_radius=16, text="Cadastrar", command=self.insert_client)
         self.register_button.place(relx=0.15, rely=0.40, relwidth=0.10, relheight=0.05)
 
         self.update_button = customtkinter.CTkButton(master=self.top_container, width=0.10, height=0.05, corner_radius=16, text="Atualizar")
-        self.update_button.place(relx=0.35, rely=0.40, relwidth=0.10, relheight=0.05)
+        self.update_button.place(relx=0.30, rely=0.40, relwidth=0.10, relheight=0.05)
 
         self.delete_button = customtkinter.CTkButton(master=self.top_container, width=0.10, height=0.05, corner_radius=16, text="Deletar", fg_color="#ec5353")
-        self.delete_button.place(relx=0.55, rely=0.40, relwidth=0.10, relheight=0.05)
+        self.delete_button.place(relx=0.45, rely=0.40, relwidth=0.10, relheight=0.05)
 
         self.clear_button = customtkinter.CTkButton(master=self.top_container, width=0.10, height=0.05, corner_radius=16, text="Limpar", command=self.clean_inputs)
-        self.clear_button.place(relx=0.75, rely=0.40, relwidth=0.10, relheight=0.05)
-    
+        self.clear_button.place(relx=0.60, rely=0.40, relwidth=0.10, relheight=0.05)
+
+        self.search_button = customtkinter.CTkButton(master=self.top_container, width=0.10, height=0.05, corner_radius=16, text="Buscar")
+        self.search_button.place(relx=0.75, rely=0.40, relwidth=0.10, relheight=0.05)
+
     def treeview(self):
-        self.listView = ttk.Treeview(self.bottom_container, height=3, column=("Nome", "CPF", "CEP", "Telefone", "Cidade", "Bairro", "Rua"))
+        self.listView = ttk.Treeview(self.bottom_container, height=3, column=("Nome", "CPF", "Email", "Telefone"))
         self.listView.heading("#0", text="")
         self.listView.heading("#1", text="Nome")
         self.listView.heading("#2", text="CPF")
-        self.listView.heading("#3", text="CEP")
+        self.listView.heading("#3", text="Email")
         self.listView.heading("#4", text="Telefone")
-        self.listView.heading("#5", text="Cidade")
-        self.listView.heading("#6", text="Bairro")
-        self.listView.heading("#7", text="Rua")
 
         self.listView.column("#0", width=1)
         self.listView.column("#1", width=40)
         self.listView.column("#2", width=40)
         self.listView.column("#3", width=40)
-        self.listView.column("#4", width=40)
-        self.listView.column("#5", width=40)
-        self.listView.column("#6", width=40)
-        self.listView.column("#7", width=40)
 
         self.listView.place(relx=0.05, rely=0.60, relwidth=0.90, relheight=0.36)
 
-if __name__ == "main":
-    Application()
+Application()
