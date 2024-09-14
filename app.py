@@ -78,6 +78,17 @@ class AppFunctions():
         for index in self.list:
             self.listView.insert("", "end", values=index)
 
+    def onDoubleClick(self, event):
+        self.clean_inputs()
+        self.listView.selection()
+
+        for i in self.listView.selection():
+            col1, col2, col3, col4 = self.listView.item(i, 'values')
+            self.name_input.insert("end", col1)
+            self.cpf_input.insert("end", col2)
+            self.email_input.insert("end", col3)
+            self.phone_input.insert("end", col4)
+
     
 class Application(customtkinter.CTk, AppFunctions):
     def __init__(self):
@@ -134,7 +145,7 @@ class Application(customtkinter.CTk, AppFunctions):
         self.update_button = customtkinter.CTkButton(master=self.top_container, width=0.10, height=0.05, corner_radius=16, text="Atualizar")
         self.update_button.place(relx=0.30, rely=0.40, relwidth=0.10, relheight=0.05)
 
-        self.delete_button = customtkinter.CTkButton(master=self.top_container, width=0.10, height=0.05, corner_radius=16, text="Deletar", fg_color="#ec5353")
+        self.delete_button = customtkinter.CTkButton(master=self.top_container, width=0.10, height=0.05, corner_radius=16, text="Deletar", fg_color="#ec5353", command=self.delete_client)
         self.delete_button.place(relx=0.45, rely=0.40, relwidth=0.10, relheight=0.05)
 
         self.clear_button = customtkinter.CTkButton(master=self.top_container, width=0.10, height=0.05, corner_radius=16, text="Limpar", command=self.clean_inputs)
@@ -155,6 +166,7 @@ class Application(customtkinter.CTk, AppFunctions):
         self.listView.column("#1", width=40)
         self.listView.column("#2", width=40)
         self.listView.column("#3", width=40)
+        self.listView.bind("<Double-1>", self.onDoubleClick)
 
         self.listView.place(relx=0.05, rely=0.60, relwidth=0.90, relheight=0.36)
 
