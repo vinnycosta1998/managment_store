@@ -3,6 +3,7 @@ from tkinter import ttk, messagebox
 import sqlite3
 import cpf
 import phone
+import email
 
 app = customtkinter.CTk()
     
@@ -46,20 +47,25 @@ class AppFunctions():
         
         self.cpf_verify = cpf.CPF(self.cpf)
         self.cpf_is_truth = self.cpf_verify.verify_cpf()
+
+        self.email_verify = email.Email(self.email)
+        self.email_is_truth = self.email_verify.validate_email()
         
         self.phone_verify = phone.Phone(self.phone)
         self.phone_is_truth = self.phone_verify.validate_phone_number()
+        print(self.cpf_is_truth, self.email_is_truth, self.phone_is_truth)
         
-        if self.cpf_is_truth and self.phone_is_truth:
+        if self.cpf_is_truth and self.email_is_truth and self.phone_is_truth:
             self.cursor.execute("""
                 INSERT INTO CLIENTS (NAME, CPF, EMAIL, PHONE)
                 VALUES (?, ?, ?, ?)
             """, (self.name, self.cpf, self.email, self.phone))
             self.connection.commit()
             self.clean_inputs()
+            self.disconnect_database()
+            self.connect_database()
         else:
-            messagebox.showwarning(title="input invalid", message="CPF ou numero de telefone invalidos")
-            
+            messagebox.showwarning(title="input invalid", message="CPF, Email, ou Numero de telefone invalidos")
 
     def list_clients(self):
         self.listView.delete(*self.listView.get_children())
@@ -109,16 +115,16 @@ class Application(customtkinter.CTk, AppFunctions):
         self.phone_label.place(relx=0.52, rely=0.2, relwidth=0.20, relheight=0.10)
 
     def inputs(self):
-        self.name_input = customtkinter.CTkTextbox(master=self.top_container, width=30, height=20, corner_radius=8)
+        self.name_input = customtkinter.CTkTextbox(master=self.top_container, width=30, height=20, corner_radius=8, activate_scrollbars=False)
         self.name_input.place(relx=0.10, rely=0.12, relwidth=0.30, relheight=0.05)
 
-        self.cpf_input = customtkinter.CTkTextbox(master=self.top_container, width=30, height=20, corner_radius=8)
+        self.cpf_input = customtkinter.CTkTextbox(master=self.top_container, width=30, height=20, corner_radius=8, activate_scrollbars=False)
         self.cpf_input.place(relx=0.60, rely=0.12, relwidth=0.30, relheight=0.05)
 
-        self.email_input = customtkinter.CTkTextbox(master=self.top_container, width=30, height=20, corner_radius=8)
+        self.email_input = customtkinter.CTkTextbox(master=self.top_container, width=30, height=20, corner_radius=8, activate_scrollbars=False)
         self.email_input.place(relx=0.10, rely=0.30, relwidth=0.30, relheight=0.05)
 
-        self.phone_input = customtkinter.CTkTextbox(master=self.top_container, width=30, height=20, corner_radius=8)
+        self.phone_input = customtkinter.CTkTextbox(master=self.top_container, width=30, height=20, corner_radius=8, activate_scrollbars=False)
         self.phone_input.place(relx=0.60, rely=0.30, relwidth=0.30, relheight=0.05 )
 
     def buttons(self):
