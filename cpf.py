@@ -18,8 +18,8 @@ class CPF:
     def validate_cpf(self):
         self.cpf = self.cpf.replace(".", "").replace("-", "")
         self.list_cpf = list(self.cpf)
-        print(len(self.list_cpf))
-        if len(self.list_cpf) != 11:
+        
+        if len(self.list_cpf) != 12:
             raise ValueError("O CPF deve ter 11 digítos")
         try:
             for i in range(0, 11):

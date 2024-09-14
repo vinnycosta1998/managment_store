@@ -1,13 +1,11 @@
 import customtkinter
-from tkinter import ttk
+from tkinter import ttk, messagebox 
 import sqlite3
 import cpf
 import phone
 
-
 app = customtkinter.CTk()
-
-
+    
 class AppFunctions():
     def clean_inputs(self):
         self.name_input.delete("0.0", "end")
@@ -50,17 +48,18 @@ class AppFunctions():
         self.cpf_is_truth = self.cpf_verify.verify_cpf()
         
         self.phone_verify = phone.Phone(self.phone)
-        self.phone_is_truth = self.phone_verify.verify_phone_number()
-
-        print(self.cpf_is_truth, self.phone_is_truth)
-
-
-        self.cursor.execute("""
-            INSERT INTO CLIENTS (NAME, CPF, EMAIL, PHONE)
-            VALUES (?, ?, ?, ?)
-        """, (self.name, self.cpf, self.email, self.phone))
-        self.connection.commit()
-        self.clean_inputs()
+        self.phone_is_truth = self.phone_verify.validate_phone_number()
+        
+        if self.cpf_is_truth and self.phone_is_truth:
+            self.cursor.execute("""
+                INSERT INTO CLIENTS (NAME, CPF, EMAIL, PHONE)
+                VALUES (?, ?, ?, ?)
+            """, (self.name, self.cpf, self.email, self.phone))
+            self.connection.commit()
+            self.clean_inputs()
+        else:
+            messagebox.showwarning(title="input invalid", message="CPF ou numero de telefone invalidos")
+            
 
     def list_clients(self):
         self.listView.delete(*self.listView.get_children())
