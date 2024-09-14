@@ -1,9 +1,12 @@
 import customtkinter
 from tkinter import ttk
 import sqlite3
+import cpf
+import phone
 
 
 app = customtkinter.CTk()
+
 
 class AppFunctions():
     def clean_inputs(self):
@@ -27,9 +30,9 @@ class AppFunctions():
             CREATE TABLE IF NOT EXISTS CLIENTS(
                 ID INTEGER PRIMARY KEY,
                 NAME VARCHAR(40) NOT NULL,
-                CPF CHAR(11),
-                EMAIL VARCHAR(40) NOT NULL,
-                PHONE CHAR(12) NOT NULL       
+                CPF CHAR(11) UNIQUE,
+                EMAIL VARCHAR(40) NOT NULL UNIQUE,
+                PHONE CHAR(12) NOT NULL UNIQUE       
             );
         """)
         self.connection.commit()
@@ -42,6 +45,15 @@ class AppFunctions():
         self.cpf = self.cpf_input.get("1.0", "end")
         self.email = self.email_input.get("1.0", "end")
         self.phone = self.phone_input.get("1.0", "end")
+        
+        self.cpf_verify = cpf.CPF(self.cpf)
+        self.cpf_is_truth = self.cpf_verify.verify_cpf()
+        
+        self.phone_verify = phone.Phone(self.phone)
+        self.phone_is_truth = self.phone_verify.verify_phone_number()
+
+        print(self.cpf_is_truth, self.phone_is_truth)
+
 
         self.cursor.execute("""
             INSERT INTO CLIENTS (NAME, CPF, EMAIL, PHONE)
@@ -54,7 +66,7 @@ class AppFunctions():
         self.listView.delete(*self.listView.get_children())
         self.connect_database()
         self.list = self.cursor.execute("""
-            SELECT ID, NAME, CPF, EMAIL, PHONE FROM CLIENTS
+            SELECT NAME, CPF, EMAIL, PHONE FROM CLIENTS
             ORDER BY NAME ASC;       
         """)
 
