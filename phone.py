@@ -17,7 +17,6 @@ class Phone:
                 self.phone_number_list[i] = int(self.phone_number_list[i])
                 if type(i) == int:
                     self.phone_number_digits_list.append(True)
-                print(self.phone_number_digits_list)
             except ValueError:
                 raise ValueError("phone number invalid")
         return all(self.phone_number_digits_list)

@@ -1,5 +1,3 @@
-import re 
-
 class CPF:
     
     def __init__(self, cpf):

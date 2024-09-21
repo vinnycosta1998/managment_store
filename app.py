@@ -4,10 +4,19 @@ import sqlite3
 import cpf
 import phone
 import email
+import uuid 
 
 app = customtkinter.CTk()
     
 class AppFunctions():
+    def fields(self):
+        self.name = self.name_input.get("1.0", "end")
+        self.cpf = self.cpf_input.get("1.0", "end")
+        self.email = self.email_input.get("1.0", "end")
+        self.phone = self.phone_input.get("1.0", "end")
+
+        return self.email
+
     def clean_inputs(self):
         self.name_input.delete("0.0", "end")
         self.cpf_input.delete("0.0", "end")
@@ -27,9 +36,9 @@ class AppFunctions():
         print("Conecting a database...")
         self.cursor.execute("""
             CREATE TABLE IF NOT EXISTS CLIENTS(
-                ID INTEGER PRIMARY KEY,
+                ID VARCHAR(40) PRIMARY KEY,
                 NAME VARCHAR(40) NOT NULL,
-                CPF CHAR(11) UNIQUE,
+                CPF CHAR(11) NOT NULL UNIQUE,
                 EMAIL VARCHAR(40) NOT NULL UNIQUE,
                 PHONE CHAR(12) NOT NULL UNIQUE       
             );
@@ -40,11 +49,9 @@ class AppFunctions():
 
 
     def insert_client(self):
-        self.name = self.name_input.get("1.0", "end")
-        self.cpf = self.cpf_input.get("1.0", "end")
-        self.email = self.email_input.get("1.0", "end")
-        self.phone = self.phone_input.get("1.0", "end")
+        self.fields()
         
+        self.id = str(uuid.uuid4())
         self.cpf_verify = cpf.CPF(self.cpf)
         self.cpf_is_truth = self.cpf_verify.verify_cpf()
 
@@ -57,15 +64,24 @@ class AppFunctions():
         
         if self.cpf_is_truth and self.email_is_truth and self.phone_is_truth:
             self.cursor.execute("""
-                INSERT INTO CLIENTS (NAME, CPF, EMAIL, PHONE)
-                VALUES (?, ?, ?, ?)
-            """, (self.name, self.cpf, self.email, self.phone))
+                INSERT INTO CLIENTS (ID, NAME, CPF, EMAIL, PHONE)
+                VALUES (?, ?, ?, ?, ?)
+            """, (self.id, self.name, self.cpf, self.email, self.phone))
             self.connection.commit()
             self.clean_inputs()
             self.disconnect_database()
             self.connect_database()
         else:
             messagebox.showwarning(title="input invalid", message="CPF, Email, ou Numero de telefone invalidos")
+    
+    def delete_client(self):
+        self.fields()
+        self.connect_database()
+        self.cursor.execute("""DELETE FROM CLIENTS WHERE EMAIL = ?""", (self.email))  
+        self.connection.commit()
+        self.disconnect_database()
+        self.clean_inputs()
+        self.list_clients()
 
     def list_clients(self):
         self.listView.delete(*self.listView.get_children())
