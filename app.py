@@ -75,9 +75,10 @@ class AppFunctions():
             messagebox.showwarning(title="input invalid", message="CPF, Email, ou Numero de telefone invalidos")
     
     def delete_client(self):
-        self.fields()
+        self.email = self.email_input.get("1.0", "end").strip()
+        print(self.email)
         self.connect_database()
-        self.cursor.execute("""DELETE FROM CLIENTS WHERE EMAIL = ?""", (self.email))  
+        self.cursor.execute("""DELETE FROM CLIENTS WHERE EMAIL = ?""", (self.email, ))  # Adicionar vírgula para ser tupla
         self.connection.commit()
         self.disconnect_database()
         self.clean_inputs()
